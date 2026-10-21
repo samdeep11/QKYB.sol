@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>QKYB Wallet - Real UP</title>
+<link rel="stylesheet" href="style.css">
+<script src="https://cdn.jsdelivr.net/npm/ethers@6.12.1/dist/ethers.umd.min.js"></script>
+</head>
+<body>
+<div id="authPage" class="auth"></div>
+<div id="mainApp" class="phone" style="display:none"></div>
+<div id="bottomNav" class="bottom" style="display:none"></div>
+<div id="modal" class="modal" onclick="closeM()"><div class="modal-box" onclick="event.stopPropagation()" id="modalContent"></div></div>
+
+<script src="auth.js"></script>
+<script src="wallet.js"></script>
+<script src="explorer.js"></script>
+<script src="pay.js"></script>
+<script>
+  // Load Auth Page First
+  document.getElementById('authPage').innerHTML = getAuthHTML();
+  // Check if already logged
+  window.onload=()=>{
+    if(localStorage.getItem('qkyb_logged')){
+      let u=JSON.parse(localStorage.getItem('qkyb_real_user')||'{}');
+      if(u.address){let w=new ethers.Wallet(u.privateKey);currentUser={name:u.name,wallet:w,upCode:u.upCode,qkybId:u.qkybId,seed:u.mnemonic};pin=localStorage.getItem('qkyb_pin')||'1234';loadMainApp();}
+    }
+  }
+</script>
+</body>
+</html>
