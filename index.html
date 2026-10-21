@@ -4,147 +4,116 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>QKYB - Quantum Wallet</title>
-<link rel="manifest" href="./manifest.json">
 <meta name="theme-color" content="#5b21b6">
 <style>
-*{font-family:Inter,sans-serif;box-sizing:border-box}
-body{margin:0;background:#f5f3ff}
+*{font-family:Inter,sans-serif;box-sizing:border-box} body{margin:0;background:#f5f3ff;padding-bottom:80px}
 .header{background:#5b21b6;color:#fff;padding:16px 16px 30px;border-radius:0 0 24px 24px}
 .balance-card{background:#fff;margin:-20px 16px 16px;padding:16px;border-radius:16px;box-shadow:0 4px 12px rgba(0,0,0,.1);overflow:hidden}
-.balance-card h2{margin:0;font-size:22px;word-break:break-word}
-.balance-card small{display:block;word-break:break-all;margin-top:4px;font-size:12px;color:#666}
-.qkyb-box{background:#f5f0ff;padding:10px 12px;border-radius:12px;margin-top:10px;font-size:13px;word-break:break-all;line-height:1.5}
-.grid{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:12px;padding:16px}
-.item{background:#fff;padding:14px;border-radius:14px;text-align:center;box-shadow:0 2px 8px rgba(0,0,0,.08);cursor:pointer}
-.item span{font-size:24px}
+.balance-card h2{margin:0;font-size:22px} .balance-card small{display:block;word-break:break-all;margin-top:4px;font-size:12px;color:#666}
+.qkyb-box{background:#f5f0ff;padding:10px;border-radius:12px;margin-top:10px;font-size:13px;word-break:break-all}
+.nav{position:fixed;bottom:0;left:0;right:0;background:#fff;display:flex;justify-content:space-around;padding:10px 0;box-shadow:0 -2px 10px rgba(0,0,0,.1);z-index:100}
+.nav div{text-align:center;font-size:12px;cursor:pointer;color:#666} .nav div.active{color:#5b21b6;font-weight:bold} .nav span{font-size:20px;display:block}
+.tab{padding:16px} .hidden{display:none!important}
+.card{background:#fff;padding:14px;border-radius:14px;margin-bottom:12px;box-shadow:0 2px 8px rgba(0,0,0,.06)}
+.grid{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:12px}
+.item{background:#fff;padding:14px;border-radius:14px;text-align:center;box-shadow:0 2px 8px rgba(0,0,0,.08);cursor:pointer} .item span{font-size:24px}
 .modal{position:fixed;inset:0;background:rgba(0,0,0,.6);display:flex;align-items:center;justify-content:center;z-index:9999}
-.modal-box{background:#fff;width:92%;max-width:380px;padding:20px;border-radius:20px;max-height:90vh;overflow-y:auto}
+.modal-box{background:#fff;width:92%;max-width:380px;padding:20px;border-radius:20px}
 .modal-box input,.modal-box select{width:100%;padding:12px;margin:6px 0;border:1px solid #ddd;border-radius:10px}
-.btn-purple{width:100%;padding:13px;background:#5b21b6;color:#fff;border:none;border-radius:10px;margin-top:8px;font-weight:bold;font-size:15px}
+.btn-purple{width:100%;padding:13px;background:#5b21b6;color:#fff;border:none;border-radius:10px;margin-top:8px;font-weight:bold}
 .btn-grey{width:100%;padding:12px;background:#eee;border:none;border-radius:10px;margin-top:8px}
-.hidden{display:none!important}
 .infoBox{padding:10px;border-radius:10px;margin:6px 0;font-weight:bold;display:none;font-size:13px}
+input.search{width:100%;padding:11px;border-radius:20px;border:none;margin-top:12px}
 </style>
 </head>
 <body>
 
-<div class="header">
-  <h2 style="margin:0">🛡️ QKYB <small style="float:right;background:#22c55e;padding:4px 10px;border-radius:20px;font-size:11px">UP-BR-B03B • LIVE</small></h2>
-  <input placeholder="🔍 Search transactions..." style="width:100%;padding:11px;border-radius:20px;border:none;margin-top:12px">
-</div>
+<div id="homeTab" class="tab">
+  <div class="header">
+    <h2 style="margin:0">🛡️ QKYB <small style="float:right;background:#22c55e;padding:4px 10px;border-radius:20px;font-size:11px">UP-BR-B03B LIVE</small></h2>
+    <input class="search" placeholder="🔍 Search transactions...">
+  </div>
+  <div class="balance-card">
+    <h2 id="balanceText">0.00 POL + 1000 QKYB</h2>
+    <small style="color:#16a34a;font-weight:bold">Rahul • UP-BR-B03B • REAL • Agra</small>
+    <small>0xb03bFD1f074771eed7c0f480CE16075539152822</small>
+    <div class="qkyb-box">
+      <b>QKYB ID:</b> qkyb_up-br-b03b@qkyb<br>
+      <b>UP Code:</b> UP-BR-B03B <span style="background:#dcfce7;padding:2px 8px;border-radius:6px">Real BTC Style ✓</span><br>
+      <button onclick="checkBalance()" class="btn-purple" style="margin-top:10px">🔄 Balance Check</button>
+    </div>
+  </div>
+  
+  <div class="card"><b>Quick Actions</b></div>
+  <div class="grid">
+    <div class="item" onclick="openModal('sendModal')"><span>📤</span><br><b>Send</b></div>
+    <div class="item" onclick="openModal('receiveModal')"><span>📥</span><br><b>Receive</b></div>
+    <div class="item" onclick="openModal('mobileModal')"><span>📲</span><br><b>Mobile</b></div>
+    <div class="item" onclick="openModal('dthModal')"><span>📺</span><br><b>DTH</b></div>
+    <div class="item" onclick="openModal('electricModal')"><span>💡</span><br><b>Electric</b></div>
+    <div class="item" onclick="openModal('ccModal')"><span>💳</span><br><b>CC Bill</b></div>
+    <div class="item" onclick="openModal('bankModal')"><span>🏦</span><br><b>Bank</b></div>
+    <div class="item" onclick="switchTab('historyTab')"><span>📜</span><br><b>History</b></div>
+  </div>
 
-<div class="balance-card">
-  <h2>0.00 POL + 1000 QKYB</h2>
-  <small style="color:#16a34a;font-weight:bold">Rahul • UP-BR-B03B • REAL • Agra</small>
-  <small>0xb03bFD1f074771eed7c0f480CE16075539152822</small>
-  <div class="qkyb-box">
-    <b>QKYB ID:</b> qkyb_up-br-b03b@qkyb<br>
-    <b>UP Code:</b> UP-BR-B03B <span style="background:#dcfce7;padding:2px 8px;border-radius:6px;font-size:11px">Real BTC Style ✓</span>
+  <div class="card" style="margin-top:16px">
+    <b>Recent Transactions</b>
+    <div id="txList"><small>No transactions yet - Send/Receive se start karo</small></div>
   </div>
 </div>
 
-<div class="grid">
-  <div class="item" onclick="openModal('mobileModal')"><span>📲</span><br><b>Mobile</b></div>
-  <div class="item" onclick="openModal('dthModal')"><span>📺</span><br><b>DTH</b></div>
-  <div class="item" onclick="openModal('electricModal')"><span>💡</span><br><b>Electric</b></div>
-  <div class="item" onclick="openModal('ccModal')"><span>💳</span><br><b>CC Bill</b></div>
-  <div class="item" onclick="openModal('bankModal')"><span>🏦</span><br><b>Bank</b></div>
+<div id="profileTab" class="tab hidden">
+  <div class="header"><h2>👤 Profile</h2></div>
+  <div class="card" style="margin:16px">
+    <h3>Rahul</h3>
+    <p><b>UP Code:</b> UP-BR-B03B (Agra)</p>
+    <p><b>Wallet:</b> 0xb03b...152822</p>
+    <p><b>QKYB ID:</b> qkyb_up-br-b03b@qkyb</p>
+    <p><b>Balance:</b> <span id="profileBalance">1000 QKYB</span></p>
+    <p><b>Status:</b> REAL • Verified ✓</p>
+    <button class="btn-purple" onclick="alert('Profile Verified - UP-BR-B03B')">Verify Profile</button>
+  </div>
 </div>
 
-<!-- MOBILE - PhonePe Style Live -->
-<div id="mobileModal" class="modal hidden"><div class="modal-box">
-  <h3>📲 Mobile Recharge - Live BBPS</h3>
-  <input id="mobNumber" type="tel" maxlength="10" placeholder="Mobile Number (10 digit)" oninput="liveDetect(this.value)">
-  <div id="operatorBox" class="infoBox" style="background:#f3f0ff"></div>
-  <select id="planSelect" style="display:none" onchange="setAmt(this.value)"></select>
-  <input id="mobAmount" type="number" placeholder="Amount QKYB">
-  <input id="mobPin" type="password" placeholder="QKYB PIN (1234)" maxlength="4">
-  <button onclick="doFinalRecharge()" class="btn-purple">Pay Now - PhonePe Flow</button>
-  <button onclick="closeModal('mobileModal')" class="btn-grey">Cancel</button>
-</div></div>
+<div id="historyTab" class="tab hidden">
+  <div class="header"><h2>📜 Transactions</h2></div>
+  <div style="padding:16px" id="fullHistory"><div class="card">No history yet</div></div>
+</div>
 
-<!-- ELECTRIC -->
-<div id="electricModal" class="modal hidden"><div class="modal-box">
-  <h3>💡 Electricity - DVVNL Agra</h3>
-  <input id="electricId" placeholder="Consumer ID / Number" oninput="liveElectric(this.value)">
-  <div id="electricBoardBox" class="infoBox" style="background:#fff3cd"></div>
-  <input id="electricAmount" placeholder="Amount QKYB">
-  <input id="electricPin" type="password" placeholder="PIN">
-  <button onclick="paySimple('Electricity')" class="btn-purple">Pay Electricity</button>
-  <button onclick="closeModal('electricModal')" class="btn-grey">Cancel</button>
-</div></div>
+<!-- MODALS - ALL FUNCTIONS -->
+<div id="sendModal" class="modal hidden"><div class="modal-box"><h3>📤 Send QKYB</h3><input id="sendTo" placeholder="To QKYB ID / Wallet"><input id="sendAmt" type="number" placeholder="Amount QKYB"><input id="sendPin" type="password" placeholder="PIN (1234)"><button onclick="doSend()" class="btn-purple">Send Now</button><button onclick="closeModal('sendModal')" class="btn-grey">Cancel</button></div></div>
+<div id="receiveModal" class="modal hidden"><div class="modal-box"><h3>📥 Receive QKYB</h3><div class="qkyb-box" style="text-align:center"><b>Your QKYB ID</b><br><h3 style="word-break:break-all">qkyb_up-br-b03b@qkyb</h3><small>0xb03bFD1f074771eed7c0f480CE16075539152822</small><br><br><div style="background:#fff;padding:10px;border-radius:10px">QR CODE (Agra UP-BR-B03B)</div></div><button onclick="closeModal('receiveModal')" class="btn-grey">Close</button></div></div>
 
-<!-- CC -->
-<div id="ccModal" class="modal hidden"><div class="modal-box">
-  <h3>💳 Credit Card Bill</h3>
-  <input id="ccNumber" placeholder="Card Number" oninput="liveCC(this.value)">
-  <div id="ccTypeBox" class="infoBox" style="background:#e3f2fd"></div>
-  <input id="ccAmount" placeholder="Amount QKYB">
-  <input id="ccPin" type="password" placeholder="PIN">
-  <button onclick="paySimple('Credit Card')" class="btn-purple">Pay CC Bill</button>
-  <button onclick="closeModal('ccModal')" class="btn-grey">Cancel</button>
-</div></div>
+<!-- Recharge Modals (PhonePe Flow) -->
+<div id="mobileModal" class="modal hidden"><div class="modal-box"><h3>📲 Mobile Recharge Live</h3><input id="mobNumber" type="tel" maxlength="10" placeholder="Mobile Number" oninput="liveDetect(this.value)"><div id="operatorBox" class="infoBox" style="background:#f3f0ff"></div><select id="planSelect" style="display:none" onchange="setAmt(this.value)"></select><input id="mobAmount" type="number" placeholder="Amount QKYB"><input id="mobPin" type="password" placeholder="PIN 1234"><button onclick="doFinalRecharge()" class="btn-purple">Pay Now</button><button onclick="closeModal('mobileModal')" class="btn-grey">Cancel</button></div></div>
+<div id="electricModal" class="modal hidden"><div class="modal-box"><h3>💡 Electricity</h3><input id="electricId" placeholder="Consumer ID" oninput="liveElectric(this.value)"><div id="electricBoardBox" class="infoBox" style="background:#fff3cd"></div><input id="electricAmount" placeholder="Amount"><input id="electricPin" type="password" placeholder="PIN"><button onclick="paySimple('Electricity')" class="btn-purple">Pay</button><button onclick="closeModal('electricModal')" class="btn-grey">Cancel</button></div></div>
+<div id="ccModal" class="modal hidden"><div class="modal-box"><h3>💳 CC Bill</h3><input id="ccNumber" placeholder="Card Number" oninput="liveCC(this.value)"><div id="ccTypeBox" class="infoBox" style="background:#e3f2fd"></div><input id="ccAmount" placeholder="Amount"><input id="ccPin" type="password" placeholder="PIN"><button onclick="paySimple('Credit Card')" class="btn-purple">Pay</button><button onclick="closeModal('ccModal')" class="btn-grey">Cancel</button></div></div>
+<div id="bankModal" class="modal hidden"><div class="modal-box"><h3>🏦 Bank</h3><input id="bankAcc" placeholder="Account"><input id="bankIfsc" placeholder="IFSC" oninput="liveBank(this.value)" style="text-transform:uppercase"><div id="bankNameBox" class="infoBox" style="background:#e8f5e9"></div><input id="bankAmount" placeholder="Amount"><input id="bankPin" type="password" placeholder="PIN"><button onclick="paySimple('Bank')" class="btn-purple">Send</button><button onclick="closeModal('bankModal')" class="btn-grey">Cancel</button></div></div>
+<div id="dthModal" class="modal hidden"><div class="modal-box"><h3>📺 DTH</h3><input id="dthId" placeholder="DTH ID" oninput="liveDTH(this.value)"><div id="dthBox" class="infoBox" style="background:#fce7f3"></div><input id="dthAmount" placeholder="Amount"><input id="dthPin" type="password" placeholder="PIN"><button onclick="paySimple('DTH')" class="btn-purple">Pay</button><button onclick="closeModal('dthModal')" class="btn-grey">Cancel</button></div></div>
 
-<!-- BANK -->
-<div id="bankModal" class="modal hidden"><div class="modal-box">
-  <h3>🏦 Bank Transfer - Live IFSC</h3>
-  <input id="bankAcc" placeholder="Account Number">
-  <input id="bankIfsc" placeholder="IFSC - SBIN0123456" maxlength="11" oninput="liveBank(this.value)" style="text-transform:uppercase">
-  <div id="bankNameBox" class="infoBox" style="background:#e8f5e9"></div>
-  <input id="bankAmount" placeholder="Amount QKYB">
-  <input id="bankPin" type="password" placeholder="PIN">
-  <button onclick="paySimple('Bank')" class="btn-purple">Send to Bank</button>
-  <button onclick="closeModal('bankModal')" class="btn-grey">Cancel</button>
-</div></div>
-
-<!-- DTH -->
-<div id="dthModal" class="modal hidden"><div class="modal-box">
-  <h3>📺 DTH Recharge</h3>
-  <input id="dthId" placeholder="DTH ID / Customer ID" oninput="liveDTH(this.value)">
-  <div id="dthBox" class="infoBox" style="background:#fce7f3"></div>
-  <input id="dthAmount" placeholder="Amount QKYB">
-  <input id="dthPin" type="password" placeholder="PIN">
-  <button onclick="paySimple('DTH')" class="btn-purple">Pay DTH</button>
-  <button onclick="closeModal('dthModal')" class="btn-grey">Cancel</button>
-</div></div>
+<!-- Bottom Nav - Wapas aa gaya! -->
+<div class="nav">
+  <div class="active" onclick="switchTab('homeTab')" id="navHome"><span>🏠</span>Home</div>
+  <div onclick="switchTab('historyTab')" id="navHistory"><span>📜</span>History</div>
+  <div onclick="switchTab('profileTab')" id="navProfile"><span>👤</span>Profile</div>
+</div>
 
 <script>
-// CORE
-function openModal(id){document.getElementById(id).classList.remove('hidden')}
-function closeModal(id){document.getElementById(id).classList.add('hidden')}
-
-// LIVE DETECT - PhonePe BBPS Logic
-const PLANS_DB={Jio:[{a:19,d:"1GB 1Day"},{a:149,d:"1GB/Day 20D"},{a:199,d:"1.5GB/Day 23D POPULAR"},{a:299,d:"2GB/Day 28D BEST"},{a:719,d:"2GB/Day 84D 5G"}],Airtel:[{a:19,d:"Unlimited 2D"},{a:199,d:"1.5GB/Day 28D"},{a:299,d:"2GB/Day OTT"},{a:699,d:"2GB/Day 84D"}],Vi:[{a:19,d:"2D Unlimited"},{a:299,d:"1.5GB/Day Binge"}],BSNL:[{a:97,d:"2GB 18D"}]};
-
-function liveDetect(num){
- let box=document.getElementById('operatorBox'), sel=document.getElementById('planSelect');
- if(num.length<4){box.style.display='none'; sel.style.display='none'; return;}
- box.style.display='block'; box.innerHTML='🔍 BBPS HLR Checking...';
- setTimeout(()=>{
-  let op="Jio", circle="UP West";
-  if(num.startsWith('9') && parseInt(num.substring(0,4))>=9000) op="Vi";
-  else if(num.startsWith('8')||num.startsWith('7')) op="Jio";
-  else if(num.startsWith('6')) op="Airtel";
-  box.innerHTML=`✅ <b>${op}</b> • ${circle} • Biller: QKYB_${op}_UP<br><small>Number: ${num} • Agra Region</small>`;
-  sel.innerHTML=`<option>-- ${op} Live Plans (BBPS) --</option>`;
-  PLANS_DB[op].forEach(p=>sel.innerHTML+=`<option value="${p.a}">${op} ₹${p.a} - ${p.d}</option>`);
-  sel.style.display='block'; sel.dataset.op=op;
- },600);
-}
+let balance=1000; let txs=[];
+function switchTab(id){document.querySelectorAll('.tab').forEach(t=>t.classList.add('hidden')); document.getElementById(id).classList.remove('hidden'); document.querySelectorAll('.nav div').forEach(n=>n.classList.remove('active')); if(id=='homeTab') document.getElementById('navHome').classList.add('active'); if(id=='profileTab') document.getElementById('navProfile').classList.add('active'); if(id=='historyTab') document.getElementById('navHistory').classList.add('active');}
+function openModal(id){document.getElementById(id).classList.remove('hidden')} function closeModal(id){document.getElementById(id).classList.add('hidden')}
+function checkBalance(){document.getElementById('balanceText').innerText=`0.00 POL + ${balance} QKYB`; document.getElementById('profileBalance').innerText=`${balance} QKYB`; alert(`✅ Balance Check Success!\n${balance} QKYB\nUP-BR-B03B • Agra`);}
+function doSend(){let to=document.getElementById('sendTo').value, amt=parseInt(document.getElementById('sendAmt').value), pin=document.getElementById('sendPin').value; if(!to||!amt||!pin) return alert('Sab bharo!'); if(pin!=='1234') return alert('PIN 1234 daalo'); if(balance<amt) return alert('Balance kam hai!'); balance-=amt; txs.push({type:'Sent', to, amt, time:new Date().toLocaleString()}); updateHistory(); checkBalance(); closeModal('sendModal'); alert(`✅ Sent ${amt} QKYB to ${to}\nTxn: QKYB${Date.now()}`);}
+function updateHistory(){let html=''; txs.forEach(t=>{html+=`<div class="card"><b>${t.type} ${t.amt} QKYB</b><br><small>To: ${t.to||t.type} • ${t.time}</small></div>`}); if(html){document.getElementById('txList').innerHTML=html; document.getElementById('fullHistory').innerHTML=html;}}
+const PLANS_DB={Jio:[{a:19,d:"1GB 1Day"},{a:149,d:"1GB/Day 20D"},{a:199,d:"1.5GB/Day 23D"},{a:299,d:"2GB/Day 28D BEST"},{a:719,d:"2GB/Day 84D"}],Airtel:[{a:199,d:"1.5GB/Day"},{a:299,d:"2GB/Day OTT"}],Vi:[{a:299,d:"1.5GB/Day"}],BSNL:[{a:97,d:"2GB"}]};
+function liveDetect(num){let box=document.getElementById('operatorBox'), sel=document.getElementById('planSelect'); if(num.length<4){box.style.display='none'; sel.style.display='none'; return;} box.style.display='block'; box.innerHTML='🔍 Detecting...'; setTimeout(()=>{let op=num.startsWith('9')&&parseInt(num.substring(0,4))>=9000?'Vi':num.startsWith('6')?'Airtel':'Jio'; box.innerHTML=`✅ <b>${op}</b> • UP West • QKYB_${op}_UP`; sel.innerHTML=`<option>-- ${op} Plans --</option>`; PLANS_DB[op].forEach(p=>sel.innerHTML+=`<option value="${p.a}">₹${p.a} - ${p.d}</option>`); sel.style.display='block'; sel.dataset.op=op;},500);}
 function setAmt(v){document.getElementById('mobAmount').value=v;}
-function doFinalRecharge(){
- let m=document.getElementById('mobNumber').value, a=document.getElementById('mobAmount').value, pin=document.getElementById('mobPin').value, sel=document.getElementById('planSelect'), op=sel.dataset.op||'Jio';
- if(!m||!a||!pin) return alert('Number, Amount, PIN bharo!');
- if(pin!=='1234') return alert('PIN galat! 1234 daalo (Demo PIN)');
- let txn='QKYB'+Date.now();
- alert(`✅ RECHARGE SUCCESS! [PhonePe Flow]\n\nOperator: ${op}\nMobile: ${m}\nAmount: ${a} QKYB\nTxn ID: ${txn}\nUP Code: UP-BR-B03B\n\nReceipt: qkyb_up-br-b03b@qkyb\nBalance: 1000 - ${a} = ${1000-a} QKYB\n\n(SMS aayega: Recharge of ₹${a} successful)`);
- closeModal('mobileModal');
-}
-function liveElectric(id){let b=document.getElementById('electricBoardBox'); if(id.length<2){b.style.display='none';return;} b.style.display='block'; b.innerHTML=`⚡ DVVNL - Agra (UP-BR-B03B)<br>Consumer: ${id}<br>State: UP • Bill Due: ₹320 (Fetch Live)`;}
-function liveCC(num){let b=document.getElementById('ccTypeBox'); if(!num){b.style.display='none';return;} let t=num[0]=='4'?'Visa':num[0]=='5'?'MasterCard':'RuPay'; b.style.display='block'; b.innerHTML=`💳 ${t} Card • ${num.slice(0,4)} XXXX • Bill Fetch: ₹1250`;}
-function liveBank(ifsc){let b=document.getElementById('bankNameBox'); if(ifsc.length<4){b.style.display='none';return;} let mp={SBIN:'SBI',HDFC:'HDFC Bank',ICIC:'ICICI',PUNB:'PNB',BARB:'BOB'}; let bank=mp[ifsc.substring(0,4).toUpperCase()]||'Bank'; b.style.display='block'; b.innerHTML=`🏦 ${bank} Verified • IFSC: ${ifsc.toUpperCase()} • UP-BR-B03B Branch`;}
-function liveDTH(id){let b=document.getElementById('dthBox'); if(id.length<2){b.style.display='none';return;} b.style.display='block'; b.innerHTML=`📺 Provider: Tata Play / Airtel • ID: ${id} • Plan: ₹350/M`;}
-function paySimple(type){alert(`✅ ${type} Payment SUCCESS!\nTxn: QKYB${Date.now()}\nUP-BR-B03B • Rahul\n1000 QKYB se deduct hua`); closeModal(type==='Electricity'?'electricModal':type==='Credit Card'?'ccModal':type==='Bank'?'bankModal':'dthModal');}
+function doFinalRecharge(){let m=document.getElementById('mobNumber').value, a=parseInt(document.getElementById('mobAmount').value), pin=document.getElementById('mobPin').value, op=document.getElementById('planSelect').dataset.op||'Jio'; if(!m||!a||!pin) return alert('Bharo sab!'); if(pin!=='1234') return alert('PIN 1234'); if(balance<a) return alert('Balance kam!'); balance-=a; txs.push({type:'Mobile Recharge '+op, to:m, amt:a, time:new Date().toLocaleString()}); updateHistory(); checkBalance(); closeModal('mobileModal'); alert(`✅ ${op} Recharge ₹${a} on ${m}\nTxn: QKYB${Date.now()}\nBalance: ${balance} QKYB`);}
+function liveElectric(id){let b=document.getElementById('electricBoardBox'); if(id.length<2){b.style.display='none';return;} b.style.display='block'; b.innerHTML=`⚡ DVVNL Agra • ${id}`;}
+function liveCC(num){let b=document.getElementById('ccTypeBox'); if(!num){b.style.display='none';return;} let t=num[0]=='4'?'Visa':'MasterCard'; b.style.display='block'; b.innerHTML=`💳 ${t} • ${num.slice(0,4)} XXXX`;}
+function liveBank(ifsc){let b=document.getElementById('bankNameBox'); if(ifsc.length<4){b.style.display='none';return;} b.style.display='block'; b.innerHTML=`🏦 ${ifsc.toUpperCase()} Verified`;}
+function liveDTH(id){let b=document.getElementById('dthBox'); if(id.length<2){b.style.display='none';return;} b.style.display='block'; b.innerHTML=`📺 DTH ID: ${id}`;}
+function paySimple(type){let amt=100; if(type=='Electricity') amt=parseInt(document.getElementById('electricAmount').value)||100; if(type=='Credit Card') amt=parseInt(document.getElementById('ccAmount').value)||100; if(type=='Bank') amt=parseInt(document.getElementById('bankAmount').value)||100; if(type=='DTH') amt=parseInt(document.getElementById('dthAmount').value)||100; if(balance<amt) return alert('Balance kam!'); balance-=amt; txs.push({type, to:type, amt, time:new Date().toLocaleString()}); updateHistory(); checkBalance(); closeModal(type=='Electricity'?'electricModal':type=='Credit Card'?'ccModal':type=='Bank'?'bankModal':'dthModal'); alert(`✅ ${type} Paid ${amt} QKYB\nBalance: ${balance} QKYB`);}
 </script>
 </body>
 </html>
